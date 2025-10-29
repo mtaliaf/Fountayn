@@ -7,11 +7,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a single task in the task management system. Uses a Builder pattern for construction
- * and thread-safe ID generation. This class is immutable to help ensure thread safety.
+ * and thread-safe ID generation. This class is immutable to help ensure invariance.
  */
 public class Task {
 
-  /** Thread-safe counter to generate unique IDs, starting from 1. */
+  /**
+   * Thread-safe counter to generate unique IDs, starting from 1.
+   * This is a almost a *pure* data class but I am choosing to have this small amount of static state here which
+   * is typically not desirable.  Moving ID generation out of here would be fine but this allows us
+   * to not have any public setters for the ID, ensuring that we never have to worry about an invalid
+   * task id being generatated.
+   * */
   private static final AtomicInteger nextIdCounter = new AtomicInteger(1);
 
   private final int id;

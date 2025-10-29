@@ -2,7 +2,6 @@ package com.fountayn;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -15,7 +14,6 @@ import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +22,9 @@ public class TaskManagerTest {
   Map<Integer, Task> store;
   Clock clock;
   private TaskManager manager;
+
+  private static final LocalDate PAST_DUE_DATE = LocalDate.of(2011, 11, 11);
+  private static final String GENERIC_DESCRIPTION = "DESC";
 
   @BeforeEach
   void initManager() {
@@ -34,11 +35,12 @@ public class TaskManagerTest {
 
   @Test
   void addTaskShouldStoreATask() throws Exception {
-    Task task = Task.builder()
-        .description("task")
-        .dueDate(LocalDate.of(2011,11,11))
-        .priority(Priority.LOW)
-        .build();
+    Task task =
+        Task.builder()
+            .description(GENERIC_DESCRIPTION)
+            .dueDate(PAST_DUE_DATE)
+            .priority(Priority.LOW)
+            .build();
 
     manager.addTask(task.getDescription(), task.getPriority(), task.getDueDate());
 
@@ -52,11 +54,12 @@ public class TaskManagerTest {
 
   @Test
   void addTaskShouldIncrementId() throws Exception {
-    Task task = Task.builder()
-        .description("task")
-        .dueDate(LocalDate.of(2011,11,11))
-        .priority(Priority.LOW)
-        .build();
+    Task task =
+        Task.builder()
+            .description(GENERIC_DESCRIPTION)
+            .dueDate(PAST_DUE_DATE)
+            .priority(Priority.LOW)
+            .build();
 
     manager.addTask(task.getDescription(), task.getPriority(), task.getDueDate());
     manager.addTask(task.getDescription(), task.getPriority(), task.getDueDate());
@@ -66,11 +69,12 @@ public class TaskManagerTest {
 
   @Test
   void markTaskCompletedShouldUpdateTask() throws Exception {
-    Task task = Task.builder()
-        .description("task")
-        .dueDate(LocalDate.of(2011,11,11))
-        .priority(Priority.LOW)
-        .build();
+    Task task =
+        Task.builder()
+            .description(GENERIC_DESCRIPTION)
+            .dueDate(PAST_DUE_DATE)
+            .priority(Priority.LOW)
+            .build();
 
     int storedId = manager.addTask(task.getDescription(), task.getPriority(), task.getDueDate());
 
@@ -84,26 +88,30 @@ public class TaskManagerTest {
 
   @Test
   void markTaskCompletedShouldThrowIfIdDoesntExist() throws Exception {
-    Task task = Task.builder()
-        .description("task")
-        .dueDate(LocalDate.of(2011,11,11))
-        .priority(Priority.LOW)
-        .build();
+    Task task =
+        Task.builder()
+            .description(GENERIC_DESCRIPTION)
+            .dueDate(PAST_DUE_DATE)
+            .priority(Priority.LOW)
+            .build();
 
     manager.addTask(task.getDescription(), task.getPriority(), task.getDueDate());
 
-    assertThrows(TaskNotFoundException.class, () -> {
-      manager.markTaskCompleted(-1);
-    });
+    assertThrows(
+        TaskNotFoundException.class,
+        () -> {
+          manager.markTaskCompleted(-1);
+        });
   }
 
   @Test
   void getTasksByPriorityShouldEmptyListIfNoneOfThatPriority() throws Exception {
-    Task task = Task.builder()
-        .description("task")
-        .dueDate(LocalDate.of(2011,11,11))
-        .priority(Priority.LOW)
-        .build();
+    Task task =
+        Task.builder()
+            .description(GENERIC_DESCRIPTION)
+            .dueDate(PAST_DUE_DATE)
+            .priority(Priority.LOW)
+            .build();
     manager.addTask(task.getDescription(), task.getPriority(), task.getDueDate());
 
     List<Task> tasks = manager.getTasksByPriority(Priority.HIGH);
@@ -113,11 +121,12 @@ public class TaskManagerTest {
 
   @Test
   void getTasksByPriorityShouldFilterWrongPriority() throws Exception {
-    Task task = Task.builder()
-        .description("task")
-        .dueDate(LocalDate.of(2011,11,11))
-        .priority(Priority.LOW)
-        .build();
+    Task task =
+        Task.builder()
+            .description(GENERIC_DESCRIPTION)
+            .dueDate(PAST_DUE_DATE)
+            .priority(Priority.LOW)
+            .build();
     manager.addTask(task.getDescription(), task.getPriority(), task.getDueDate());
     manager.addTask(task.getDescription(), task.getPriority(), task.getDueDate());
     manager.addTask(task.getDescription(), Priority.HIGH, task.getDueDate());
@@ -130,14 +139,15 @@ public class TaskManagerTest {
 
   @Test
   void getTasksByPriorityShouldSortByDueDate() throws Exception {
-    Task task = Task.builder()
-        .description("task")
-        .dueDate(LocalDate.of(2011,11,11))
-        .priority(Priority.LOW)
-        .build();
-    manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2026,11,11));
-    manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2025,11,11));
-    manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2028,11,11));
+    Task task =
+        Task.builder()
+            .description(GENERIC_DESCRIPTION)
+            .dueDate(PAST_DUE_DATE)
+            .priority(Priority.LOW)
+            .build();
+    manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2026, 11, 11));
+    manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2025, 11, 11));
+    manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2028, 11, 11));
 
     List<Task> tasks = manager.getTasksByPriority(Priority.LOW);
 
@@ -148,28 +158,30 @@ public class TaskManagerTest {
 
   @Test
   void getOverdueTasksShouldOnlyReturnPastDue() throws Exception {
-    Task task = Task.builder()
-        .description("task")
-        .dueDate(LocalDate.of(2011,11,11))
-        .priority(Priority.LOW)
-        .build();
-    manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2040,11,11));
-    manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2022,11,11));
+    Task task =
+        Task.builder()
+            .description(GENERIC_DESCRIPTION)
+            .dueDate(PAST_DUE_DATE)
+            .priority(Priority.LOW)
+            .build();
+    manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2040, 11, 11));
+    manager.addTask(task.getDescription(), task.getPriority(), PAST_DUE_DATE);
 
     List<Task> tasks = manager.getOverdueTasks();
 
     assertEquals(1, tasks.size());
-    assertEquals(2022, tasks.getFirst().getDueDate().getYear());
+    assertEquals(PAST_DUE_DATE.getYear(), tasks.getFirst().getDueDate().getYear());
   }
 
   @Test
   void getOverdueTasksShouldEmptyListIfNoneOverDue() throws Exception {
-    Task task = Task.builder()
-        .description("task")
-        .dueDate(LocalDate.of(2011,11,11))
-        .priority(Priority.LOW)
-        .build();
-    manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2025,10,26));
+    Task task =
+        Task.builder()
+            .description(GENERIC_DESCRIPTION)
+            .dueDate(PAST_DUE_DATE)
+            .priority(Priority.LOW)
+            .build();
+    manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2025, 10, 26));
 
     List<Task> tasks = manager.getOverdueTasks();
 
@@ -178,16 +190,49 @@ public class TaskManagerTest {
 
   @Test
   void getOverdueTasksShouldEmptyListIfMarkedComplete() throws Exception {
-    Task task = Task.builder()
-        .description("task")
-        .dueDate(LocalDate.of(2011,11,11))
-        .priority(Priority.LOW)
-        .build();
-    int id = manager.addTask(task.getDescription(), task.getPriority(), LocalDate.of(2020, 10, 26));
+    Task task =
+        Task.builder()
+            .description(GENERIC_DESCRIPTION)
+            .dueDate(PAST_DUE_DATE)
+            .priority(Priority.LOW)
+            .build();
+    int id = manager.addTask(task.getDescription(), task.getPriority(), PAST_DUE_DATE);
     manager.markTaskCompleted(id);
     List<Task> tasks = manager.getOverdueTasks();
 
     assertTrue(tasks.isEmpty());
+  }
+
+  @Test
+  void getOverdueTasksShouldSortListOnPriority() throws Exception {
+    Task task =
+        Task.builder()
+            .description("task")
+            .dueDate(LocalDate.of(2011, 11, 11))
+            .priority(Priority.LOW)
+            .build();
+    manager.addTask(task.getDescription(), Priority.MEDIUM, PAST_DUE_DATE);
+    manager.addTask(task.getDescription(), Priority.LOW, PAST_DUE_DATE);
+    manager.addTask(task.getDescription(), Priority.HIGH, PAST_DUE_DATE);
+
+    List<Task> tasks = manager.getOverdueTasks();
+
+    assertEquals(3, tasks.size());
+    assertEquals(Priority.HIGH, tasks.getFirst().getPriority());
+    assertEquals(Priority.LOW, tasks.getLast().getPriority());
+  }
+
+  @Test
+  void removeTaskShouldRemoveTaskIfFound() throws Exception {
+    int id = manager.addTask("TEST", Priority.MEDIUM, LocalDate.of(2020, 10, 26));
+    Task task = getOnlyTask();
+    assertEquals(id, task.getId());
+
+    Task deletedTask = manager.removeTask(id);
+    assertEquals("TEST", deletedTask.getDescription());
+    assertEquals(id, deletedTask.getId());
+    assertEquals(LocalDate.of(2020, 10, 26), deletedTask.getDueDate());
+    assertEquals(0, store.size());
   }
 
   private Task getOnlyTask() {

@@ -19,9 +19,8 @@ public class TaskManager {
   public TaskManager() {
     this(new ConcurrentHashMap<>(), Clock.systemDefaultZone());
   }
-  /**
-   * Visible for testing only.
-   */
+
+  /** Visible for testing only. */
   TaskManager(Map<Integer, Task> tasks, Clock clock) {
     this.tasks = tasks;
     this.clock = clock;
