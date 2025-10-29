@@ -1,0 +1,91 @@
+Yes, here is the `README.md` content formatted in Markdown, as requested.
+
+# 📝 Task Management System
+
+This is a console-based application built in Java for managing personal tasks. It tests skills in object-oriented design, data structures, Java 8 streams, and basic console I/O.
+
+-----
+
+## 🛠️ Design Choices
+
+### Data Structure Selection
+
+| Component | Structure | Reasoning |
+| :--- | :--- | :--- |
+| **Task Storage** | `ConcurrentHashMap<Integer, Task>` | Used for **O(1) average time complexity** for key operations like `addTask`, `removeTask`, and `markTaskCompleted` (lookup by ID). The `Concurrent` aspect addresses the bonus requirement for **thread safety**, ensuring reliable concurrent access and modification. |
+| **ID Generation** | `AtomicInteger` | Ensures that task IDs are **unique** and **thread-safe** across the entire application, even if multiple threads attempt to create tasks simultaneously. |
+| **Task Creation** | **Builder Pattern** | Provides a **flexible and readable way** to construct `Task` objects. It centralizes **input validation** (e.g., checking for null/empty description) before the object is created, helping to maintain the invariant that a `Task` is always valid. |
+
+### Error Handling
+
+Custom exceptions (`TaskNotFoundException` and `InvalidTaskException`) are used to clearly communicate specific operational failures (e.g., trying to complete a non-existent task) to the calling code and the end-user. These are not runtime exceptions because most of the exceptions should be recoverable.
+
+-----
+
+## ▶️ Running and Testing with Gradle
+
+This project assumes a standard Gradle build structure.
+
+### Prerequisites
+
+  * **Java Development Kit (JDK) 17+** (or any Java 8+ version that supports streams)
+  * **Gradle** (or use the provided Gradle Wrapper: `gradlew`)
+
+### Running the Application
+
+1.  **Build the project:**
+
+    ```bash
+    ./gradlew build
+    ```
+
+2.  **Run the application:**
+
+    The `run` task executes the `main` method in `com.taskmgmt.Main`.
+
+    ```bash
+    ./gradlew run
+    ```
+
+    This will launch the interactive console menu.
+
+### Running Unit Tests
+
+Unit tests are included to verify the core business logic of the `Task` model and the `TaskManager`.
+
+1.  **Execute tests:**
+
+    ```bash
+    ./gradlew test
+    ```
+
+    Gradle will compile the test code, run all JUnit tests, and generate a report.
+
+2.  **View Test Report (Optional):**
+
+    After running the tests, an HTML report is generated in the build directory.
+
+    ```bash
+    # Open the report in your browser
+    open build/reports/tests/test/index.html
+    ```
+
+-----
+
+## 💡 Assumptions and Enhancements
+
+### Assumptions Made
+
+  * **Date Format:** All user input for the due date is strictly expected to be in the `YYYY-MM-DD` format.
+  * **Case Sensitivity:** Priority input (e.g., "HIGH") is case-insensitive in the console menu (converted to uppercase before parsing).
+
+### Ideas for Future Enhancements
+
+1.  **File Persistence:** Implement simple persistence (e.g., using JSON serialization with Gson or standard Java serialization) so that tasks are saved to a file and loaded on startup, rather than being lost when the application exits.
+2.  **Editing Tasks:** Add a new menu option to allow users to modify a task's description, priority, or due date by ID.
+3.  **User Interface:** Upgrade from a command-line interface (CLI) to a simple graphical user interface (GUI) using JavaFX or Swing for a better user experience.
+4.  **Recurrence:** Extend the `Task` model to include support for recurring tasks (e.g., daily, weekly).
+
+-----
+
+Would you like me to generate the JUnit test code for the `TaskManager` class now?
